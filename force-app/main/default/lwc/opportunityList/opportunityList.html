@@ -1,0 +1,102 @@
+<template>
+    <lightning-card title="Opportunities Chart" icon-name="standard:opportunity">
+        <div class="slds-m-around_medium">
+            <template if:true={isLoading}>
+                <div class="slds-text-align_center slds-p-around_medium">
+                    <lightning-spinner alternative-text="Loading opportunities"></lightning-spinner>
+                    <p class="slds-m-top_small">Loading opportunities...</p>
+                </div>
+            </template>
+            
+            <template if:true={hasError}>
+                <div class="slds-text-color_error slds-p-around_medium">
+                    <p><strong>Error loading opportunities:</strong> {errorMessage}</p>
+                    <p class="slds-m-top_small">Please check your browser console for more details.</p>
+                </div>
+            </template>
+            
+            <template if:true={hasOpportunities}>
+                <div class="slds-m-bottom_small">
+                    <p class="slds-text-heading_small">Total Opportunities: {totalCount}</p>
+                    <p class="slds-text-body_small slds-text-color_weak">Click on any dot to view opportunity details</p>
+                </div>
+                
+                <!-- Account filter picklist -->
+                <div class="slds-m-bottom_medium" style="max-width: 320px;">
+                    <lightning-combobox
+                        name="account"
+                        label="Filter by Account"
+                        value={selectedAccountId}
+                        options={accountOptions}
+                        onchange={handleAccountChange}
+                        placeholder="All Accounts">
+                    </lightning-combobox>
+                </div>
+                
+                <!-- Chart container -->
+                <div class="chart-container" style="width: 100%; height: 500px; border: 2px solid #0070d2; background-color: #ffffff; position: relative;">
+                    <canvas class="chart-canvas" style="display: block; width: 100%; height: 100%;"></canvas>
+                </div>
+            </template>
+            
+            <!-- Modal -->
+            <template if:true={showModal}>
+                <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open" aria-modal="true" aria-labelledby="modal-heading-01">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                                <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                                    <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+                                </svg>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Opportunity Details</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                            <template if:true={selectedOpportunity}>
+                                <div class="slds-grid slds-grid_vertical slds-gutters">
+                                    <div class="slds-col slds-size_1-of-1">
+                                        <dl class="slds-list_horizontal slds-wrap">
+                                            <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Name">Name:</dt>
+                                            <dd class="slds-item_detail slds-truncate">
+                                                <strong>{selectedOpportunity.Name}</strong>
+                                            </dd>
+                                            
+                                            <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Amount">Amount:</dt>
+                                            <dd class="slds-item_detail slds-truncate">{formattedAmount}</dd>
+                                            
+                                            <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Stage">Stage:</dt>
+                                            <dd class="slds-item_detail slds-truncate">{selectedOpportunity.StageName}</dd>
+                                            
+                                            <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Close Date">Close Date:</dt>
+                                            <dd class="slds-item_detail slds-truncate">{formattedCloseDate}</dd>
+                                            
+                                            <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Account">Account:</dt>
+                                            <dd class="slds-item_detail slds-truncate">{selectedOpportunity.AccountName}</dd>
+                                            
+                                            <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Owner">Owner:</dt>
+                                            <dd class="slds-item_detail slds-truncate">{selectedOpportunity.OwnerName}</dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                        <footer class="slds-modal__footer">
+                            <button class="slds-button slds-button_neutral" onclick={closeModal}>Close</button>
+                        </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+            
+            <template if:false={hasOpportunities}>
+                <template if:false={isLoading}>
+                    <div class="slds-p-around_medium">
+                        <p class="slds-text-heading_small">No opportunities found.</p>
+                        <p class="slds-text-color_weak slds-m-top_small">There are no opportunities in your org to display.</p>
+                    </div>
+                </template>
+            </template>
+        </div>
+    </lightning-card>
+</template>

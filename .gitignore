@@ -1,0 +1,25 @@
+# Salesforce
+.sf/
+.sfdx/
+.localdevserver/
+.sfdx/alias.json
+.sfdx/orgs.json
+.sfdx/telemetry.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Dependencies
+node_modules/
